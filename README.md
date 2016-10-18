@@ -1,4 +1,4 @@
-# go-ccnds
+# go-cddns
 Golang client for dynamically updating cloudflare DNS records on a specified interval. Useful if you're using Cloudflare to point to a device with a dynamic IP Address
 
 ## Usage
