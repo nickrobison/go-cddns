@@ -116,4 +116,5 @@ type config struct {
 	DomainName     string
 	ZoneID         string
 	RecordNames    []string
+	Remove         bool
 }

@@ -13,9 +13,10 @@ type dnsType string
 
 const (
 	// 	HTTP Methods
-	GET  httpMethod = "GET"
-	PUT  httpMethod = "PUT"
-	POST httpMethod = "POST"
+	GET    httpMethod = "GET"
+	PUT    httpMethod = "PUT"
+	POST   httpMethod = "POST"
+	DELETE httpMethod = "DELETE"
 	//	DNS Types
 	A     dnsType = "A"
 	AAAA  dnsType = "AAAA"
@@ -175,6 +176,35 @@ func (c *cloudflareManager) CreateDNSRecord(recordName string, dns dnsType, ipAd
 	}
 }
 
+func (c *cloudflareManager) DeleteDNSRecord(record cloudflareDNSRecord) {
+	//	Create the URL
+	var cloudflareURL *url.URL
+	var err error
+	cloudflareURL, err = cloudflareURL.Parse("https://api.cloudflare.com/client/v4/zones/" + c.Config.ZoneID + "/dns_records/" + record.Id)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+
+	req, err := c.buildHTTPRequest(cloudflareURL, DELETE, nil)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+	dnsResponse, err := c.Client.Do(req)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+	defer dnsResponse.Body.Close()
+	var deletedRecord cloudflareResponse
+	err = json.NewDecoder(dnsResponse.Body).Decode(&deletedRecord)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+
+	if !deletedRecord.Success {
+		logger.Fatalf("Unable to delete record %v. %v", record.Name, deletedRecord.Messages)
+	}
+}
+
 func (c *cloudflareManager) buildHTTPRequest(url *url.URL, method httpMethod, body io.Reader) (*http.Request, error) {
 	var req *http.Request
 	var err error
@@ -197,6 +227,13 @@ func (c *cloudflareManager) buildHTTPRequest(url *url.URL, method httpMethod, bo
 	case PUT:
 		{
 			req, err = http.NewRequest(http.MethodPut, url.String(), body)
+			if err != nil {
+				return nil, err
+			}
+		}
+	case DELETE:
+		{
+			req, err = http.NewRequest(http.MethodDelete, url.String(), nil)
 			if err != nil {
 				return nil, err
 			}
