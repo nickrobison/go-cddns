@@ -3,8 +3,10 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
+	"log/syslog"
 	"net/http"
 	"os"
 	"time"
@@ -12,8 +14,15 @@ import (
 
 var logger *log.Logger
 
+func init() {
+	logwriter, err := syslog.New(syslog.LOG_NOTICE, "go-cddns")
+	if err != nil {
+		panic("Unable to log to syslog")
+	}
+	logger = log.New(io.MultiWriter(logwriter, os.Stdout), "go-cddns:", log.Lshortfile)
+}
+
 func main() {
-	logger = log.New(os.Stdout, "go-cddns:", log.Lshortfile)
 
 	//	Read config file
 	file, err := ioutil.ReadFile("config.json")
