@@ -100,15 +100,15 @@ func handleInterrupt(signalChannel chan os.Signal, cfm *cloudflareManager) {
 func updateCloudflareRecord(cfm *cloudflareManager) {
 
 	// Get an updated record
-	updatedIpAddress, err := getCurrentIPAddress(cfm.Client)
+	updatedIPAddress, err := getCurrentIPAddress(cfm.Client)
 	if err != nil {
 		logger.Println(err)
 		return
 	}
 
-	if updatedIpAddress != cfm.CurrentIPAddress {
-		logger.Printf("IP Address changed from %v, to %v\n", cfm.CurrentIPAddress, updatedIpAddress)
-		cfm.CurrentIPAddress = updatedIpAddress
+	if updatedIPAddress != cfm.CurrentIPAddress {
+		logger.Printf("IP Address changed from %v, to %v\n", cfm.CurrentIPAddress, updatedIPAddress)
+		cfm.CurrentIPAddress = updatedIPAddress
 
 		//	Get the cloudflare DNS records
 		records, err := cfm.GetDNSRecords()

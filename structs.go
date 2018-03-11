@@ -100,7 +100,7 @@ type cloudflareDNSResponse struct {
 
 type cloudflareDNSUpdateResponse struct {
 	cloudflareResponse
-	Result map[string]interface{}
+	Result cloudflareDNSRecord
 }
 
 type newCloudflareDNSRecord struct {

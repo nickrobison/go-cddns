@@ -123,7 +123,7 @@ func (c *cloudflareManager) updateDNSRecord(record cloudflareDNSRecord, ipAddres
 		logger.Fatalln(err)
 	}
 	defer dnsResponse.Body.Close()
-	var updatedRecord cloudflareDNSResponse
+	var updatedRecord cloudflareDNSUpdateResponse
 	err = json.NewDecoder(dnsResponse.Body).Decode(&updatedRecord)
 	if err != nil {
 		logger.Fatalln(err)
