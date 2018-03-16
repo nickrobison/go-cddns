@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -38,13 +39,10 @@ func main() {
 		logger.Fatalln(err)
 	}
 
-	logger.Printf("Updating records for: %v", cloudflareConfig.RecordNames)
-
-	//	Check for correct config values
-	if cloudflareConfig.UpdateInterval < 5 {
-		logger.Fatalln("Update interval cannot be less than 5 minutes")
+	err = validateConfig(&cloudflareConfig)
+	if err != nil {
+		logger.Fatalln(err)
 	}
-	logger.Printf("Setting update interval to %v minutes\n", cloudflareConfig.UpdateInterval)
 
 	minimalTLSConfig := &tls.Config{
 		MinVersion: tls.VersionTLS12,
@@ -146,4 +144,35 @@ func getCurrentIPAddress(httpClient *http.Client) (string, error) {
 	}
 	return string(ipAddress), nil
 
+}
+
+func validateConfig(cloudflareConfig *config) error {
+
+	// Validate credentials
+	if cloudflareConfig.Key == "" {
+		return errors.New("Empty API Key, exiting")
+	}
+
+	if cloudflareConfig.Email == "" {
+		return errors.New("Empty Email Address, exiting")
+	}
+
+	if cloudflareConfig.DomainName == "" {
+		return errors.New("Empty Domain Name, exiting")
+	}
+
+	if len(cloudflareConfig.RecordNames) == 0 {
+		return errors.New("No records to update, exiting")
+	}
+
+	if cloudflareConfig.UpdateInterval < 5 {
+		return errors.New("Update interval cannot be less than 5 minutes")
+	}
+
+	logger.Printf("Updating records for: %v", cloudflareConfig.RecordNames)
+
+	//	Check for correct config values
+	logger.Printf("Setting update interval to %v minutes\n", cloudflareConfig.UpdateInterval)
+
+	return nil
 }
