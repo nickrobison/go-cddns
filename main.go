@@ -36,6 +36,7 @@ func main() {
 	if err != nil {
 		logger.Fatalln(err)
 	}
+	cloudflareConfig.CloudflareURL = "https://api.cloudflare.com/client/v4/zones/"
 
 	err = validateConfig(&cloudflareConfig)
 	if err != nil {
@@ -53,9 +54,9 @@ func main() {
 	}
 
 	cfm := &cloudflareManager{
-		Client:           client,
-		Config:           cloudflareConfig,
-		CurrentIPAddress: "",
+		cloudflareConfig,
+		client,
+		"",
 	}
 
 	// Register interrupt handler
@@ -74,14 +75,14 @@ func main() {
 func handleInterrupt(signalChannel chan os.Signal, cfm *cloudflareManager) {
 	<-signalChannel
 	logger.Println("Shutting down, performing cleanup operations")
-	if cfm.Config.Remove {
+	if cfm.Remove {
 		logger.Println("Removing DNS records")
 		records, err := cfm.GetDNSRecords()
 		if err != nil {
 			logger.Fatalln(err)
 		}
 
-		for _, name := range cfm.Config.RecordNames {
+		for _, name := range cfm.RecordNames {
 			if record, ok := records[name]; ok {
 				logger.Printf("Deleting %v", record.Name)
 				cfm.DeleteDNSRecord(record)
@@ -113,7 +114,7 @@ func updateCloudflareRecord(cfm *cloudflareManager) {
 			return
 		}
 		//	Range over the given RecordNames and update them, if possible
-		for _, name := range cfm.Config.RecordNames {
+		for _, name := range cfm.RecordNames {
 			if record, ok := records[name]; ok {
 				if record.Content != cfm.CurrentIPAddress {
 					logger.Printf("Record %v has ip address %v, updating to %v\n", name, record.Content, cfm.CurrentIPAddress)

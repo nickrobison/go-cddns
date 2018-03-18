@@ -30,8 +30,8 @@ const (
 )
 
 type cloudflareManager struct {
+	config
 	Client           *http.Client
-	Config           config
 	CurrentIPAddress string
 }
 
@@ -39,7 +39,7 @@ func (c *cloudflareManager) GetDNSRecords() (map[string]cloudflareDNSRecord, err
 	//	Create the URL
 	var cloudflareURL *url.URL
 	var err error
-	cloudflareURL, err = cloudflareURL.Parse("https://api.cloudflare.com/client/v4/zones/")
+	cloudflareURL, err = cloudflareURL.Parse(c.CloudflareURL)
 	if err != nil {
 		logger.Fatalln(err)
 	}
@@ -50,7 +50,7 @@ func (c *cloudflareManager) GetDNSRecords() (map[string]cloudflareDNSRecord, err
 
 	//Add the search params
 	params := req.URL.Query()
-	params.Add("name", c.Config.DomainName)
+	params.Add("name", c.DomainName)
 	req.URL.RawQuery = params.Encode()
 
 	zoneResponse, err := c.Client.Do(req)
@@ -66,7 +66,7 @@ func (c *cloudflareManager) GetDNSRecords() (map[string]cloudflareDNSRecord, err
 	}
 
 	//	Create the URL
-	cloudflareURL, err = cloudflareURL.Parse("https://api.cloudflare.com/client/v4/zones/" + zones.Result[0].Id + "/dns_records")
+	cloudflareURL, err = cloudflareURL.Parse(c.CloudflareURL + zones.Result[0].Id + "/dns_records")
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (c *cloudflareManager) updateDNSRecord(record cloudflareDNSRecord, ipAddres
 	//	Create the URL
 	var cloudflareURL *url.URL
 	var err error
-	cloudflareURL, err = cloudflareURL.Parse("https://api.cloudflare.com/client/v4/zones/" + c.Config.ZoneID + "/dns_records/" + record.Id)
+	cloudflareURL, err = cloudflareURL.Parse(c.CloudflareURL + c.ZoneID + "/dns_records/" + record.Id)
 	if err != nil {
 		logger.Fatalln(err)
 	}
@@ -145,7 +145,7 @@ func (c *cloudflareManager) CreateDNSRecord(recordName string, dns dnsType, ipAd
 	//	Create the URL
 	var cloudflareURL *url.URL
 	var err error
-	cloudflareURL, err = cloudflareURL.Parse("https://api.cloudflare.com/client/v4/zones/" + c.Config.ZoneID + "/dns_records")
+	cloudflareURL, err = cloudflareURL.Parse(c.CloudflareURL + c.ZoneID + "/dns_records")
 	if err != nil {
 		logger.Fatalln(err)
 	}
@@ -180,7 +180,7 @@ func (c *cloudflareManager) DeleteDNSRecord(record cloudflareDNSRecord) {
 	//	Create the URL
 	var cloudflareURL *url.URL
 	var err error
-	cloudflareURL, err = cloudflareURL.Parse("https://api.cloudflare.com/client/v4/zones/" + c.Config.ZoneID + "/dns_records/" + record.Id)
+	cloudflareURL, err = cloudflareURL.Parse(c.CloudflareURL + c.ZoneID + "/dns_records/" + record.Id)
 	if err != nil {
 		logger.Fatalln(err)
 	}
@@ -240,8 +240,8 @@ func (c *cloudflareManager) buildHTTPRequest(url *url.URL, method httpMethod, bo
 		}
 	}
 	//	Set the headers
-	req.Header.Set("X-Auth-Email", c.Config.Email)
-	req.Header.Set("X-Auth-Key", c.Config.Key)
+	req.Header.Set("X-Auth-Email", c.Email)
+	req.Header.Set("X-Auth-Key", c.Key)
 	req.Header.Set("Content-Type", "application/json")
 
 	return req, nil

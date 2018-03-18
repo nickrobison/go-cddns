@@ -117,4 +117,5 @@ type config struct {
 	ZoneID         string
 	RecordNames    []string
 	Remove         bool
+	CloudflareURL  string
 }
