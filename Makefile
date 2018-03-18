@@ -2,7 +2,7 @@ VERSION := 0.0.1
 PKGNAME := go-cddns
 LICENSE := MIT
 URL := http://github.com/nickrobison/go-cddns
-RELEASE := 4
+RELEASE := 2
 USER := cddns
 DESC := Dynamic DNS client for Cloudflare
 MAINTAINER := Nick Robison <nick@nickrobison.com>
@@ -35,7 +35,7 @@ release:
 	# Build
 	GOOS=linux GOARCH=amd64 go build -o packaging/debian/usr/bin/go-cddns .
 	# Package
-	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} fpm-ubuntu ${DEB_OPTS} \
+	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} --entrypoint fpm alanfranz/fpm-within-docker:debian-jessie ${DEB_OPTS} \
 	--iteration ${RELEASE} \
 	--architecture amd64 \
 	--deb-systemd go-cddns.service \
@@ -44,16 +44,11 @@ release:
 	# Remove it
 	rm packaging/debian/usr/bin/go-cddns
 	# Upload it
-	# Manually, for now
-	# curl -H "X-Bintray-Debian-Distribution: jessie,xenial,stretch" \
-	# -H "X-Bintray-Debian-Component: main" \
-	# -H "X-Bintray-Debian-Architecture: amd64" \
-	# -unickrobison:${API_KEY} -T go-cddns_${VERSION}-${RELEASE}_amd64.deb \
-	# https://api.bintray.com/content/nickrobison/debian/go-cddns/0.0.1/go-cddns/go-cddns_${VERSION}-${RELEASE}_amd64.deb;deb_distribution=jessie,xenial;deb_component=main;deb_architecture=amd64
+	./upload.sh ${VERSION} ${RELEASE} amd64
 	# Build
 	GOOS=linux GOARCH=arm go build -o packaging/debian/usr/bin/go-cddns .
 	# Package
-	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} fpm-ubuntu ${DEB_OPTS} \
+	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} --entrypoint fpm alanfranz/fpm-within-docker:debian-jessie ${DEB_OPTS} \
 	--iteration ${RELEASE} \
 	--architecture armhf \
 	--deb-systemd go-cddns.service \
@@ -62,9 +57,4 @@ release:
 	# Remove it
 	rm packaging/debian/usr/bin/go-cddns
 	# Upload everything
-	# Manually, for now
-	# curl -H "X-Bintray-Debian-Distribution: jessie,xenial,stretch" \
-	# -H "X-Bintray-Debian-Component: main" \
-	# -H "X-Bintray-Debian-Architecture: amd64" \
-	# -unickrobison:${API_KEY} -T go-cddns_${VERSION}-${RELEASE}_armhf.deb \
-	# https://api.bintray.com/content/nickrobison/debian/go-cddns/0.0.1/go-cddns/go-cddns_${VERSION}-${RELEASE}_armhf.deb
+	./upload.sh ${VERSION} ${RELEASE} armhf	

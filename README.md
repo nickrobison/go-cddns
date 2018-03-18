@@ -1,4 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/nickrobison/go-cddns.svg?branch=master)](https://travis-ci.org/nickrobison/go-cddns)
+[ ![Download](https://api.bintray.com/packages/nickrobison/debian/go-cddns/images/download.svg) ](https://bintray.com/nickrobison/debian/go-cddns/_latestVersion)
 # go-cddns
 Golang client for dynamically updating cloudflare DNS records on a specified interval. Useful if you're using Cloudflare to point to a device with a dynamic IP Address
 

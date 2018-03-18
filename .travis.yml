@@ -1,0 +1,19 @@
+language: go
+
+go:
+  - "1.10"
+  - tip
+
+services:
+  - docker
+
+script:
+  - go test ./...
+
+deploy:
+  provider: script
+  script: make release
+  on:
+    master: true
+    tags: true
+    condition: $TRAVIS_GO_VERSION =~ ^1\.10\.[0-9]+$
