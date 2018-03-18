@@ -1,0 +1,19 @@
+[Unit]
+Description=Cloudflare Dynamic IP Address Updater
+ConditionPathExists=/usr/bin/go-cddns
+After=network.target
+ 
+[Service]
+Type=simple
+User=cddns
+Group=cddns
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+StartLimitIntervalSec=60
+
+ExecStart=/usr/bin/go-cddns --config=/etc/go-cddns/config.json
+ 
+[Install]
+WantedBy=multi-user.target

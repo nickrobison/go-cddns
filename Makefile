@@ -17,10 +17,8 @@ FPM_OPTS=-s dir -v $(VERSION) -n $(PKGNAME) \
   --url "$(URL)" \
   --description  "$(DESC)" \
   --verbose
-#	--config-files etc/ \
-  --verbose
 
-DEB_OPTS= -t deb --deb-user $(USER) --deb-no-default-config-files
+DEB_OPTS= -t deb --deb-user $(USER) --after-install packaging/debian/go-cddns.postinst
 
 temp = $(subst /, ,$@)
 os = $(word 1, $(temp))
@@ -35,15 +33,16 @@ $(PLATFORMS):
 .PHONY: release
 release: 
 	# Build
-	GOOS=linux GOARCH=amd64 go build .
+	GOOS=linux GOARCH=amd64 go build -o packaging/debian/usr/bin/go-cddns .
 	# Package
 	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} fpm-ubuntu ${DEB_OPTS} \
 	--iteration ${RELEASE} \
 	--architecture amd64 \
+	--deb-systemd go-cddns.service \
+	-C packaging/debian \
 	${FPM_OPTS} \
-	go-cddns
 	# Remove it
-	rm go-cddns
+	rm packaging/debian/usr/bin/go-cddns
 	# Upload it
 	# Manually, for now
 	# curl -H "X-Bintray-Debian-Distribution: jessie,xenial,stretch" \
@@ -52,15 +51,16 @@ release:
 	# -unickrobison:${API_KEY} -T go-cddns_${VERSION}-${RELEASE}_amd64.deb \
 	# https://api.bintray.com/content/nickrobison/debian/go-cddns/0.0.1/go-cddns/go-cddns_${VERSION}-${RELEASE}_amd64.deb;deb_distribution=jessie,xenial;deb_component=main;deb_architecture=amd64
 	# Build
-	GOOS=linux GOARCH=arm go build .
+	GOOS=linux GOARCH=arm go build -o packaging/debian/usr/bin/go-cddns .
 	# Package
 	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} fpm-ubuntu ${DEB_OPTS} \
 	--iteration ${RELEASE} \
 	--architecture armhf \
+	--deb-systemd go-cddns.service \
+	-C packaging/debian \
 	${FPM_OPTS} \
-	go-cddns
 	# Remove it
-	rm go-cddns
+	rm packaging/debian/usr/bin/go-cddns
 	# Upload everything
 	# Manually, for now
 	# curl -H "X-Bintray-Debian-Distribution: jessie,xenial,stretch" \

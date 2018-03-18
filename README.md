@@ -18,6 +18,8 @@ apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB
 sudo apt-get update && apt-get install go-cddns
 ```
 
+The package installation will create a config file in ```/etc/go-cddns/config.json```, which is where you should set your configuration options.
+
 ## Usage
 
 Create a config.json with the following structure:
@@ -32,9 +34,15 @@ Create a config.json with the following structure:
   "Remove": "{Boolean of whether or not to remove the records on shutdown}"
   }
   ```
+
+Run the application, optionally specifying the path to the config file.
+
+```bash
+go-cddns -file=/path/to/file
+```
+
 ## Notes
 
 * The update interval must be more than 5 minutes, per the WhatIsMyIP API [rules](http://whatismyipaddress.com/api).
 * The records names must be FQDNs, even though they don't appear in the cloudflare dashboard as such.
 * If the Remove field is set to true, the listed DNS records will be removed when the program exits.
-
