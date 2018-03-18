@@ -101,7 +101,7 @@ func (c *cloudflareManager) updateDNSRecord(record cloudflareDNSRecord, ipAddres
 	//	Create the URL
 	var cloudflareURL *url.URL
 	var err error
-	cloudflareURL, err = cloudflareURL.Parse(c.CloudflareURL + c.ZoneID + "/dns_records/" + record.Id)
+	cloudflareURL, err = cloudflareURL.Parse(c.CloudflareURL + "/" + c.ZoneID + "/dns_records/" + record.Id)
 	if err != nil {
 		logger.Fatalln(err)
 	}
@@ -110,6 +110,8 @@ func (c *cloudflareManager) updateDNSRecord(record cloudflareDNSRecord, ipAddres
 		Type:    A,
 		Name:    record.Name,
 		Content: ipAddress,
+		Proxied: record.Proxied,
+		TTL:     record.Ttl,
 	}
 
 	b := new(bytes.Buffer)

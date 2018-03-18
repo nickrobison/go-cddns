@@ -107,6 +107,8 @@ type newCloudflareDNSRecord struct {
 	Type    dnsType `json:"type"`
 	Name    string  `json:"name"`
 	Content string  `json:"content"`
+	Proxied bool    `json:"proxied"`
+	TTL     int     `json:"ttl"`
 }
 
 type config struct {
