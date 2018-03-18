@@ -1,8 +1,7 @@
 language: go
-
 go:
-  - "1.10"
-  - tip
+  - '1.10.x'
+  - master
 
 services:
   - docker
@@ -15,5 +14,8 @@ deploy:
   script: make release
   on:
     master: true
-    tags: true
-    condition: $TRAVIS_GO_VERSION =~ ^1\.10\.[0-9]+$
+    tags: true  
+    condition: $TRAVIS_GO_VERSION =~ ^1\.10(\.[0-9]+)?$ 
+
+env:
+  secure: OhR91RCTQ3MHmxn86e95+s1rR7Ddxv8d4Bi2E13SynGpZawRuOTnnfZxYTD54GEYXRnLU/rKNlqKp+ovZEtjcjnahL4TX/jFYU/qkqGnrXWwnYhv75Im2pFnyVwLz5TtxNKZypXr9PRbmtSvvN9H5MKKoBFJnfz+y1Y/jllQiswNAHnmcWTnq0jqh9vB4CvEAzFPgT/BQhv0tVnupJfyd0sQ+db+SOsjjn8CmPlYVKdsB9OcZJiOAl1RkvfM/90hDV5KlvTbWbglqA7ahFpbr05yYLW4lpsASzmXq2TA7fq1IAkloolaXfT1bOWGl2KAyS/aWRzGa60XatmOQ/OIhZCrUf9EwhpBAReH9E8PdIme2VFVbP890VjYwZ2j65CtFWnEHKNFlV9qkSf5J+bgakfl2Hf1s96CGIA+JhkFkRUoptIhThKHyyCkaUieBVGsZV2uqExFs/IfKSB6b1aLoXbX17yy79w6CmukkTotycoVliPzqTrEKVpatK3VYPkPi6AqnbqnWlBchtF1SD5qU7gaRJRCUlrxtp2MbnoL4H/ifneVayg2ZX9VxCTtEjR4KFeTJgI1s/2dEyKfRuKItLomVtW/yYF9zyA1L4nz1qj+njns+zAVjsvUJEf2ChRvo3ehet8rJ+zFfBDQDocZHG61/cNmsy46QCVwS1ERnvA=

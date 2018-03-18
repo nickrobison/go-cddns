@@ -1,8 +1,8 @@
-VERSION := 0.0.1
+VERSION := 0.1.0
 PKGNAME := go-cddns
 LICENSE := MIT
 URL := http://github.com/nickrobison/go-cddns
-RELEASE := 2
+RELEASE := 1
 USER := cddns
 DESC := Dynamic DNS client for Cloudflare
 MAINTAINER := Nick Robison <nick@nickrobison.com>
@@ -27,11 +27,12 @@ arch = $(word 2, $(temp))
 build-all: $(PLATFORMS)
 
 $(PLATFORMS):
-	GOOS=$(os) GOARCH=$(arch) go build -o 'bin/go-cddns_0.0.1_$(arch)' .
+	GOOS=$(os) GOARCH=$(arch) go build -o 'bin/go-cddns_0.1.0_$(arch)' .
 .PHONY: build-all $(PLATFORMS)
 
 .PHONY: release
 release: 
+	docker pull alanfranz/fpm-within-docker:debian-jessie
 	# Build
 	GOOS=linux GOARCH=amd64 go build -o packaging/debian/usr/bin/go-cddns .
 	# Package
