@@ -5,17 +5,21 @@
 Golang client for dynamically updating cloudflare DNS records on a specified interval. Useful if you're using Cloudflare to point to a device with a dynamic IP Address
 
 ## Installation
+
+### Go package
+```bash
 go get -u github.com/nickrobison/go-cddns
+```
 
 ### Debian repository
-We also now have a debian (and Ubuntu) repo with builds for both amd64 and armhf architectures.
+We also now have a debian (and Ubuntu) repository with builds for both amd64 and arm architectures.
 Since we require systemd, the builds only support debian jessie and newer, and ubuntu xenial (16.04) and later.
 
 The repository is hosted on bintray, so there are some special setup instructions.
 
 ```bash
 sudo apt-get install apt-transport-https # Bintray only supports https connections
-echo "deb https://dl.bintray.com/nickrobison/debian {distribution} {components}" | sudo tee -a /etc/apt/sources.list
+echo "deb https://dl.bintray.com/nickrobison/debian {xenial|jessie|stretch} main" | sudo tee -a /etc/apt/sources.list
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 # We need to import the Bintray public key
 sudo apt-get update && apt-get install go-cddns
 ```
