@@ -27,10 +27,13 @@ func init() {
 
 func main() {
 
+	// Parse command line flags
+	opts := parseCommandLineFlags()
+
 	//	Read config file
-	file, err := ioutil.ReadFile("config.json")
+	file, err := ioutil.ReadFile(opts.Filename)
 	if err != nil {
-		logger.Fatalln("Cannot open config.json")
+		logger.Fatalf("Cannot open config file %s", opts.Filename)
 	}
 
 	var cloudflareConfig config
@@ -66,7 +69,7 @@ func main() {
 	go handleInterrupt(sigs, cfm)
 
 	updateCloudflareRecord(cfm)
-	for _ = range time.NewTicker(time.Duration(cloudflareConfig.UpdateInterval) * time.Minute).C {
+	for range time.NewTicker(time.Duration(cloudflareConfig.UpdateInterval) * time.Minute).C {
 		updateCloudflareRecord(cfm)
 	}
 
