@@ -24,11 +24,25 @@ temp = $(subst /, ,$@)
 os = $(word 1, $(temp))
 arch = $(word 2, $(temp))
 
-build-all: $(PLATFORMS)
+build: test
+	go build -o 'go-cddns' .
+
+test:
+	go test -v ./...
+
+.PHONY: all $(PLATFORMS)
+all: $(PLATFORMS)
 
 $(PLATFORMS):
 	GOOS=$(os) GOARCH=$(arch) go build -o 'bin/go-cddns_0.1.0_$(arch)' .
-.PHONY: build-all $(PLATFORMS)
+
+
+.PHONY: clean
+clean:
+	-rm -rf bin/
+	-rm go-cddns
+	-rm *.deb
+	-rm packaging/debian/usr/bin/go-cddns
 
 .PHONY: release
 release: 

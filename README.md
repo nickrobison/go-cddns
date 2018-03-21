@@ -44,7 +44,7 @@ Create a config.json with the following structure:
 Run the application, optionally specifying the path to the config file.
 
 ```bash
-go-cddns -file=/path/to/file
+go-cddns -config=/path/to/file
 ```
 
 ## Notes
