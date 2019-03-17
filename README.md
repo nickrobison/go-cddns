@@ -1,17 +1,21 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/nickrobison/go-cddns.svg?branch=master)](https://travis-ci.org/nickrobison/go-cddns)
 [ ![Download](https://api.bintray.com/packages/nickrobison/debian/go-cddns/images/download.svg) ](https://bintray.com/nickrobison/debian/go-cddns/_latestVersion)
+
 # go-cddns
+
 Golang client for dynamically updating cloudflare DNS records on a specified interval. Useful if you're using Cloudflare to point to a device with a dynamic IP Address
 
 ## Installation
 
 ### Go package
+
 ```bash
 go get -u github.com/nickrobison/go-cddns
 ```
 
 ### Debian repository
+
 We also now have a debian (and Ubuntu) repository with builds for both amd64 and arm architectures.
 Since we require systemd, the builds only support debian jessie and newer, and ubuntu xenial (16.04) and later.
 
@@ -45,6 +49,32 @@ Run the application, optionally specifying the path to the config file.
 
 ```bash
 go-cddns -config=/path/to/file
+```
+
+## Docker Image
+
+go-cddns is also provided as a Docker image.
+The application automatically starts when the container boots, but it lacks a functioning config file.
+You'll need to add the path to the desired config as a volume.
+
+```bash
+docker run -v /{path/to/config}/config.json:/etc/config.json nickrobison/go-cddns
+```
+
+The container can be controlled by systemd via a custom unit file, such as this:
+
+```ini
+[Unit]
+Description=Go-cddns container
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a -v /etc/config.json:/etc/config.json nickrobison/go-cddns
+ExecStop=/usr/bin/docker stop -t 2 nickrobison/go-cddns
+
+[Install]
+WantedBy=local.target
 ```
 
 ## Notes
