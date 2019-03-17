@@ -55,7 +55,7 @@ bintray:
 	# Upload it
 	./upload.sh ${VERSION} ${RELEASE} amd64
 	# Copy the arm binary
-	cp bin/go-cddns_${VERSION}_arm ${PWD}/packaging/debian/usr/bin/go-cddns
+	cp bin/go-cddns_${VERSION}_arm packaging/debian/usr/bin/go-cddns
 	# Package arm
 	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} --entrypoint fpm alanfranz/fpm-within-docker:debian-jessie ${DEB_OPTS} \
 	--iteration ${RELEASE} \
