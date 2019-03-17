@@ -44,7 +44,7 @@ clean:
 bintray:
 	docker pull alanfranz/fpm-within-docker:debian-jessie
 	# Copy the amd64 binary
-	cp /bin/go-cddns-${VERSION}_amd64 packaging/debian/usr/bin/go-cddns
+	cp bin/go-cddns_${VERSION}_amd64 packaging/debian/usr/bin/go-cddns
 	# Package amd64
 	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} --entrypoint fpm alanfranz/fpm-within-docker:debian-jessie ${DEB_OPTS} \
 	--iteration ${RELEASE} \
@@ -55,7 +55,7 @@ bintray:
 	# Upload it
 	./upload.sh ${VERSION} ${RELEASE} amd64
 	# Copy the arm binary
-	cp /bin/go-cddns-${VERSION}_arm packaging/debian/usr/bin/go-cddns
+	cp bin/go-cddns_${VERSION}_arm packaging/debian/usr/bin/go-cddns
 	# Package arm
 	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} --entrypoint fpm alanfranz/fpm-within-docker:debian-jessie ${DEB_OPTS} \
 	--iteration ${RELEASE} \
@@ -70,7 +70,7 @@ docker:
 	docker build . -t nickrobison/go-cddns
 	./docker_push.sh
 
-release: clean all bintray docker
+release: all bintray docker
 
 
 .PHONY: all $(PLATFORMS) release clean test bintray docker
