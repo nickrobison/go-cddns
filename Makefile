@@ -30,22 +30,19 @@ build: test
 test:
 	go test -v ./...
 
-.PHONY: all $(PLATFORMS)
 all: $(PLATFORMS)
 
 $(PLATFORMS):
 	GOOS=$(os) GOARCH=$(arch) go build -o 'bin/go-cddns_0.1.0_$(arch)' .
 
 
-.PHONY: clean
 clean:
 	-rm -rf bin/
 	-rm go-cddns
 	-rm *.deb
 	-rm packaging/debian/usr/bin/go-cddns
 
-.PHONY: release
-release: 
+release: clean
 	docker pull alanfranz/fpm-within-docker:debian-jessie
 	# Build
 	GOOS=linux GOARCH=amd64 go build -o packaging/debian/usr/bin/go-cddns .
@@ -73,3 +70,5 @@ release:
 	rm packaging/debian/usr/bin/go-cddns
 	# Upload everything
 	./upload.sh ${VERSION} ${RELEASE} armhf	
+
+.PHONY: all $(PLATFORMS) release clean test
