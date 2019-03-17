@@ -13,8 +13,8 @@ deploy:
   provider: script
   script: make release
   on:
-    master: true
-    tags: true  
+    # master: true
+    # tags: true  
     condition: $TRAVIS_GO_VERSION =~ ^1\.12
 
 env:
