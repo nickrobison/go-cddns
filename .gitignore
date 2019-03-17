@@ -1,2 +1,6 @@
 .vscode
 *.deb
+bin/
+debug*
+go-*
+config.json

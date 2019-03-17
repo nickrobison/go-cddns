@@ -2,7 +2,7 @@ VERSION := 0.1.0
 PKGNAME := go-cddns
 LICENSE := MIT
 URL := http://github.com/nickrobison/go-cddns
-RELEASE := 1
+RELEASE := 2
 USER := cddns
 DESC := Dynamic DNS client for Cloudflare
 MAINTAINER := Nick Robison <nick@nickrobison.com>
@@ -33,8 +33,7 @@ test:
 all: $(PLATFORMS)
 
 $(PLATFORMS):
-	GOOS=$(os) GOARCH=$(arch) go build -o 'bin/go-cddns_0.1.0_$(arch)' .
-
+	GOOS=$(os) GOARCH=$(arch) go build -o 'bin/go-cddns_${VERSION}_$(arch)' .
 
 clean:
 	-rm -rf bin/
@@ -42,33 +41,36 @@ clean:
 	-rm *.deb
 	-rm packaging/debian/usr/bin/go-cddns
 
-release: clean
+bintray:
 	docker pull alanfranz/fpm-within-docker:debian-jessie
-	# Build
-	GOOS=linux GOARCH=amd64 go build -o packaging/debian/usr/bin/go-cddns .
-	# Package
+	# Copy the amd64 binary
+	cp /bin/go-cddns-${VERSION}_amd64 packaging/debian/usr/bin/go-cddns
+	# Package amd64
 	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} --entrypoint fpm alanfranz/fpm-within-docker:debian-jessie ${DEB_OPTS} \
 	--iteration ${RELEASE} \
 	--architecture amd64 \
 	--deb-systemd go-cddns.service \
 	-C packaging/debian \
-	${FPM_OPTS} \
-	# Remove it
-	rm packaging/debian/usr/bin/go-cddns
+	${FPM_OPTS}
 	# Upload it
 	./upload.sh ${VERSION} ${RELEASE} amd64
-	# Build
-	GOOS=linux GOARCH=arm go build -o packaging/debian/usr/bin/go-cddns .
-	# Package
+	# Copy the arm binary
+	cp /bin/go-cddns-${VERSION}_arm packaging/debian/usr/bin/go-cddns
+	# Package arm
 	docker run --rm -it -v "${PWD}:${DOCKER_WDIR}" -w ${DOCKER_WDIR} --entrypoint fpm alanfranz/fpm-within-docker:debian-jessie ${DEB_OPTS} \
 	--iteration ${RELEASE} \
 	--architecture armhf \
 	--deb-systemd go-cddns.service \
 	-C packaging/debian \
-	${FPM_OPTS} \
-	# Remove it
-	rm packaging/debian/usr/bin/go-cddns
+	${FPM_OPTS}
 	# Upload everything
-	./upload.sh ${VERSION} ${RELEASE} armhf	
+	./upload.sh ${VERSION} ${RELEASE} armhf
 
-.PHONY: all $(PLATFORMS) release clean test
+docker:
+	docker build . -t nickrobison/go-cddns
+	./docker_push.sh
+
+release: clean all bintray docker
+
+
+.PHONY: all $(PLATFORMS) release clean test bintray docker
