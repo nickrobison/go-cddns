@@ -59,6 +59,7 @@ You'll need to add the path to the desired config as a volume.
 
 ```bash
 docker run -v /{path/to/config}/config.json:/etc/config.json nickrobison/go-cddns
+```
 
 The container can be controlled by systemd via a custom unit file, such as this:
 
