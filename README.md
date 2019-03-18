@@ -66,16 +66,24 @@ The container can be controlled by systemd via a custom unit file, such as this:
 ```ini
 [Unit]
 Description=Go-cddns container
+Requires=docker.service
 After=docker.service
 
 [Service]
+TimeoutStartSec=0
 Restart=always
-ExecStart=/usr/bin/docker start -a -v /etc/config.json:/etc/config.json nickrobison/go-cddns
-ExecStop=/usr/bin/docker stop -t 2 nickrobison/go-cddns
+ExecStartPre=-/usr/bin/docker kill nickrobison/go-cddns
+ExecStartPre=-/usr/bin/docker rm nickrobison/go-cddns
+ExecStartPre=/usr/bin/docker pull nickrobison/go-cddns
+ExecStart=/usr/bin/docker run --rm -v /etc/go-cddns/config.json:/etc/config.json nickrobison/go-cddns
+ExecStop=/usr/bin/docker stop nickrobison/go-cddns
 
 [Install]
 WantedBy=local.target
 ```
+
+Save this file as `go-cddns.service` within the `systemd/system` directory.
+You can start immediately and at boot, by running: `systemctl enable --now go-cddns`.
 
 ## Notes
 
